@@ -1,10 +1,11 @@
 package systems
 
 import (
-	// "math/rand"
 	"fmt"
+	"math/rand"
 	"reflect"
-	// "time"
+	"time"
+
 	"github.com/EngoEngine/ecs"
 	"github.com/EngoEngine/engo"
 	"github.com/EngoEngine/engo/common"
@@ -29,6 +30,7 @@ type Tile struct {
 	common.RenderComponent
 	common.SpaceComponent
 }
+
 // SceneSystem シーンシステム
 type SceneSystem struct {
 	world   *ecs.World
@@ -47,6 +49,31 @@ func (ss *SceneSystem) Remove(entity ecs.BasicEntity) {
 
 // Update アップデートする
 func (ss *SceneSystem) Update(dt float32) {
+	if engo.Input.Button("MoveUp").Down() {
+		engo.Mailbox.Dispatch(common.CameraMessage{
+			Axis:        common.YAxis,
+			Value:       -16,
+			Incremental: true,
+		})
+	} else if engo.Input.Button("MoveDown").Down() {
+		engo.Mailbox.Dispatch(common.CameraMessage{
+			Axis:        common.YAxis,
+			Value:       16,
+			Incremental: true,
+		})
+	} else if engo.Input.Button("MoveLeft").Down() {
+		engo.Mailbox.Dispatch(common.CameraMessage{
+			Axis:        common.XAxis,
+			Value:       -16,
+			Incremental: true,
+		})
+	} else if engo.Input.Button("MoveRight").Down() {
+		engo.Mailbox.Dispatch(common.CameraMessage{
+			Axis:        common.XAxis,
+			Value:       16,
+			Incremental: true,
+		})
+	}
 }
 
 // New 作成時に呼び出される
@@ -56,7 +83,7 @@ func (ss *SceneSystem) New(w *ecs.World) {
 
 // Init 初期化
 func (ss *SceneSystem) Init(w *ecs.World) {
-	// rand.Seed(time.Now().UnixNano())
+	rand.Seed(time.Now().UnixNano())
 	ss.world = w
 	// 素材シートの読み込み
 	loadTxt := "pics/overworld_tileset_grass.png"
@@ -73,7 +100,7 @@ func (ss *SceneSystem) Init(w *ecs.World) {
 						Y: float32(i * cellLength),
 					}
 					tile.RenderComponent = common.RenderComponent{
-						Drawable: Spritesheet.Cell(0),
+						Drawable: Spritesheet.Cell(rand.Intn(4)),
 						Scale:    engo.Point{X: float32(cellLength / 16), Y: float32(cellLength / 16)},
 					}
 					tile.RenderComponent.SetZIndex(0)

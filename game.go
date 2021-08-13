@@ -2,6 +2,7 @@ package main
 
 import (
 	"image/color"
+
 	"github.com/EngoEngine/ecs"
 	"github.com/EngoEngine/engo"
 	"github.com/EngoEngine/engo/common"
@@ -13,8 +14,8 @@ type MainScene struct{}
 func run() {
 	opts := engo.RunOptions{
 		Title:          "ColonyGame",
-		Width:          900,
-		Height:         600,
+		Width:          1200,
+		Height:         900,
 		StandardInputs: true,
 		NotResizable:   true,
 	}
