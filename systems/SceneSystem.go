@@ -3,7 +3,8 @@ package systems
 import (
 	"fmt"
 	"math/rand"
-	"reflect"
+
+	// "reflect"
 	"time"
 
 	"github.com/EngoEngine/ecs"
@@ -68,6 +69,7 @@ func (ss *SceneSystem) Update(dt float32) {
 			Incremental: true,
 		})
 	} else if engo.Input.Button("MoveRight").Down() {
+		fmt.Println(camEntity.X())
 		engo.Mailbox.Dispatch(common.CameraMessage{
 			Axis:        common.XAxis,
 			Value:       16,
@@ -78,26 +80,25 @@ func (ss *SceneSystem) Update(dt float32) {
 
 // New 作成時に呼び出される
 func (ss *SceneSystem) New(w *ecs.World) {
-	ss.Init(w)
+	ss.init(w)
 }
 
 // Init 初期化
-func (ss *SceneSystem) Init(w *ecs.World) {
+func (ss *SceneSystem) init(w *ecs.World) {
 	rand.Seed(time.Now().UnixNano())
 	ss.world = w
 	// 素材シートの読み込み
 	loadTxt := "pics/overworld_tileset_grass.png"
 	Spritesheet = common.NewSpritesheetWithBorderFromFile(loadTxt, 16, 16, 0, 0)
-	fmt.Println(Spritesheet.CellCount())
 	for _, system := range ss.world.Systems() {
 		switch sys := system.(type) {
 		case *common.RenderSystem:
-			for i := 0; i < cellLength; i++ {
-				for j := 0; j < cellLength; j++ {
+			for i := 0; i < 100; i++ {
+				for j := 0; j < 100; j++ {
 					tile := &Tile{BasicEntity: ecs.NewBasic()}
 					tile.SpaceComponent.Position = engo.Point{
-						X: float32(j * cellLength),
-						Y: float32(i * cellLength),
+						X: float32(j*cellLength - cellLength),
+						Y: float32(i*cellLength - cellLength),
 					}
 					tile.RenderComponent = common.RenderComponent{
 						Drawable: Spritesheet.Cell(rand.Intn(4)),
@@ -109,12 +110,24 @@ func (ss *SceneSystem) Init(w *ecs.World) {
 			}
 		}
 	}
+	createRiver(ss.world)
 	// カメラエンティティの取得
 	for _, system := range w.Systems() {
-		fmt.Println(reflect.TypeOf(system))
 		switch sys := system.(type) {
 		case *common.CameraSystem:
 			camEntity = sys
+			common.CameraBounds.Max.X = float32(1000 * 16)
+			common.CameraBounds.Max.Y = float32(1000 * 16)
 		}
 	}
+}
+
+func createRiver(w *ecs.World) {
+	rand.Seed(time.Now().UnixNano())
+	// 川が垂直方向で始まるか水平方向で始まるか
+	if_vertical := false
+	if rand.Intn(2) == 1 {
+		if_vertical = true
+	}
+	fmt.Println(if_vertical)
 }
