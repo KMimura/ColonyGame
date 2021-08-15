@@ -140,16 +140,38 @@ func createRiver(w *ecs.World, stage_tiles *[screenLength][screenLength]tileInfo
 		Y       int
 		tilenum int
 	}
+	if_going_south := true
+	if rand.Intn(2) == 1 {
+		if_going_south = false
+	}
+	// just_curved := false
 	// 川の始まりの地点の選択
 	river_start_point := rand.Intn(screenLength/2) + screenLength/4
 	var river_info_array []river_info
-	river_info_array = append(river_info_array, river_info{0, river_start_point, 60})
-	river_info_array = append(river_info_array, river_info{0, river_start_point + 1, 61})
-	river_info_array = append(river_info_array, river_info{0, river_start_point + 2, 62})
-	for i := 1; i < screenLength; i++ {
-		river_info_array = append(river_info_array, river_info{i, river_start_point, 60})
-		river_info_array = append(river_info_array, river_info{i, river_start_point + 1, 61})
-		river_info_array = append(river_info_array, river_info{i, river_start_point + 2, 62})
+	// 初期位置作成
+	if if_going_south {
+		river_info_array = append(river_info_array, river_info{0, river_start_point, 60})
+		river_info_array = append(river_info_array, river_info{0, river_start_point + 1, 61})
+		river_info_array = append(river_info_array, river_info{0, river_start_point + 2, 62})
+	} else {
+		river_info_array = append(river_info_array, river_info{river_start_point, 0, 49})
+		river_info_array = append(river_info_array, river_info{river_start_point + 1, 0, 61})
+		river_info_array = append(river_info_array, river_info{river_start_point + 2, 0, 73})
+	}
+
+	// 初期値以降作成
+	if if_going_south {
+		for i := 1; i < screenLength; i++ {
+			river_info_array = append(river_info_array, river_info{i, river_start_point, 60})
+			river_info_array = append(river_info_array, river_info{i, river_start_point + 1, 61})
+			river_info_array = append(river_info_array, river_info{i, river_start_point + 2, 62})
+		}
+	} else {
+		for i := 1; i < screenLength; i++ {
+			river_info_array = append(river_info_array, river_info{river_start_point, i, 49})
+			river_info_array = append(river_info_array, river_info{river_start_point + 1, i, 61})
+			river_info_array = append(river_info_array, river_info{river_start_point + 2, i, 73})
+		}
 	}
 
 	// 引数として受けとったステージ情報を書き換える
