@@ -160,17 +160,26 @@ func createRiver(w *ecs.World, stage_tiles *[screenLength][screenLength]tileInfo
 	}
 
 	// 初期値以降作成
+	// 川の描画を終えた座標の、進行方向軸の値
+	var river_cursor_x = 0
+	var river_cursor_y = 0
 	if if_going_south {
+		river_cursor_x = river_start_point
+		river_cursor_y = 1
 		for i := 1; i < screenLength; i++ {
-			river_info_array = append(river_info_array, river_info{i, river_start_point, 60})
-			river_info_array = append(river_info_array, river_info{i, river_start_point + 1, 61})
-			river_info_array = append(river_info_array, river_info{i, river_start_point + 2, 62})
+			river_info_array = append(river_info_array, river_info{river_cursor_y, river_cursor_x, 60})
+			river_info_array = append(river_info_array, river_info{river_cursor_y, river_cursor_x + 1, 61})
+			river_info_array = append(river_info_array, river_info{river_cursor_y, river_cursor_x + 2, 62})
+			river_cursor_y++
 		}
 	} else {
+		river_cursor_x = 1
+		river_cursor_y = river_start_point
 		for i := 1; i < screenLength; i++ {
-			river_info_array = append(river_info_array, river_info{river_start_point, i, 49})
-			river_info_array = append(river_info_array, river_info{river_start_point + 1, i, 61})
-			river_info_array = append(river_info_array, river_info{river_start_point + 2, i, 73})
+			river_info_array = append(river_info_array, river_info{river_cursor_y, river_cursor_x, 49})
+			river_info_array = append(river_info_array, river_info{river_cursor_y + 1, river_cursor_x, 61})
+			river_info_array = append(river_info_array, river_info{river_cursor_y + 2, river_cursor_x, 73})
+			river_cursor_x++
 		}
 	}
 
