@@ -26,6 +26,10 @@ const cellLength = 48
 
 const screenLength = 50
 
+type tileInfo struct {
+	spritesheetNum int
+}
+
 // Tile タイル一つ一つを表す構造体
 type Tile struct {
 	ecs.BasicEntity
@@ -94,15 +98,13 @@ func (ss *SceneSystem) init(w *ecs.World) {
 	for _, system := range ss.world.Systems() {
 		switch sys := system.(type) {
 		case *common.RenderSystem:
-			type tileInfo struct {
-				spritesheetNum int
-			}
 			var stage_tiles [screenLength][screenLength]tileInfo
 			for i, s := range stage_tiles {
 				for j, _ := range s {
 					stage_tiles[i][j].spritesheetNum = rand.Intn(4)
 				}
 			}
+			createRiver(w, &stage_tiles)
 			for i, s := range stage_tiles {
 				for j, y := range s {
 					tile := &Tile{BasicEntity: ecs.NewBasic()}
@@ -131,14 +133,27 @@ func (ss *SceneSystem) init(w *ecs.World) {
 	}
 }
 
-// func createRiver(w *ecs.World) []int {
-// 	rand.Seed(time.Now().UnixNano())
-// 	// 川が垂直方向で始まるか水平方向で始まるか
-// 	if_vertical := false
-// 	if rand.Intn(2) == 1 {
-// 		if_vertical = true
-// 	}
-// 	var start_points [2]int
-// 	// 川の始まりの地点の選択
-// 	river_start_point := rand.Intn(screenLength/2) + screenLength/4
-// }
+func createRiver(w *ecs.World, stage_tiles *[screenLength][screenLength]tileInfo) {
+	rand.Seed(time.Now().UnixNano())
+	type river_info struct {
+		X       int
+		Y       int
+		tilenum int
+	}
+	// 川の始まりの地点の選択
+	river_start_point := rand.Intn(screenLength/2) + screenLength/4
+	var river_info_array []river_info
+	river_info_array = append(river_info_array, river_info{0, river_start_point, 60})
+	river_info_array = append(river_info_array, river_info{0, river_start_point + 1, 61})
+	river_info_array = append(river_info_array, river_info{0, river_start_point + 2, 62})
+	for i := 1; i < screenLength; i++ {
+		river_info_array = append(river_info_array, river_info{i, river_start_point, 60})
+		river_info_array = append(river_info_array, river_info{i, river_start_point + 1, 61})
+		river_info_array = append(river_info_array, river_info{i, river_start_point + 2, 62})
+	}
+
+	// 引数として受けとったステージ情報を書き換える
+	for _, r := range river_info_array {
+		stage_tiles[r.X][r.Y].spritesheetNum = r.tilenum
+	}
+}
