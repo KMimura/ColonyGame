@@ -170,31 +170,125 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 		riverCursorX = 1
 		riverCursorY = riverStartPoint
 	}
+	// 川の蛇行を始めてからの時間
+	curveGen := 0
 	shouldContinue := true
+	var yArray [3]int
+	var xArray [3]int
+	var tileNum [3]int
 	for shouldContinue {
 		if ifGoingSouth {
-			riverInfoArray = append(riverInfoArray, riverInfo{riverCursorY, riverCursorX, 60})
-			riverInfoArray = append(riverInfoArray, riverInfo{riverCursorY, riverCursorX + 1, 61})
-			riverInfoArray = append(riverInfoArray, riverInfo{riverCursorY, riverCursorX + 2, 62})
+			switch curveGen {
+			case 0:
+				yArray[0] = riverCursorY
+				yArray[1] = riverCursorY
+				yArray[2] = riverCursorY
+				xArray[0] = riverCursorX
+				xArray[1] = riverCursorX + 1
+				xArray[2] = riverCursorX + 2
+				tileNum[0] = 60
+				tileNum[1] = 61
+				tileNum[2] = 62
+			case 1:
+				yArray[0] = riverCursorY
+				yArray[1] = riverCursorY
+				yArray[2] = riverCursorY
+				xArray[0] = riverCursorX
+				xArray[1] = riverCursorX + 1
+				xArray[2] = riverCursorX + 2
+				tileNum[0] = 49
+				tileNum[1] = 49
+				tileNum[2] = 50
+				curveGen = 2
+			case 2:
+				yArray[0] = riverCursorY
+				yArray[1] = riverCursorY
+				yArray[2] = riverCursorY
+				xArray[0] = riverCursorX
+				xArray[1] = riverCursorX + 1
+				xArray[2] = riverCursorX + 2
+				tileNum[0] = 61
+				tileNum[1] = 61
+				tileNum[2] = 62
+				curveGen = 3
+			case 3:
+				yArray[0] = riverCursorY
+				yArray[1] = riverCursorY
+				yArray[2] = riverCursorY
+				xArray[0] = riverCursorX
+				xArray[1] = riverCursorX + 1
+				xArray[2] = riverCursorX + 2
+				tileNum[0] = 85
+				tileNum[1] = 61
+				tileNum[2] = 62
+				curveGen = 0
+			}
 			riverCursorY++
 			if riverCursorY >= screenLength {
 				shouldContinue = false
 			}
-			if rand.Intn(15) == 0 {
+			if curveGen == 0 && rand.Intn(15) == 0 {
 				ifGoingSouth = !ifGoingSouth
+				curveGen = 1
 			}
 		} else {
-			riverInfoArray = append(riverInfoArray, riverInfo{riverCursorY, riverCursorX, 49})
-			riverInfoArray = append(riverInfoArray, riverInfo{riverCursorY + 1, riverCursorX, 61})
-			riverInfoArray = append(riverInfoArray, riverInfo{riverCursorY + 2, riverCursorX, 73})
+			switch curveGen {
+			case 0:
+				yArray[0] = riverCursorY
+				yArray[1] = riverCursorY + 1
+				yArray[2] = riverCursorY + 2
+				xArray[0] = riverCursorX
+				xArray[1] = riverCursorX
+				xArray[2] = riverCursorX
+				tileNum[0] = 49
+				tileNum[1] = 61
+				tileNum[2] = 73
+			case 1:
+				yArray[0] = riverCursorY
+				yArray[1] = riverCursorY + 1
+				yArray[2] = riverCursorY + 2
+				xArray[0] = riverCursorX
+				xArray[1] = riverCursorX
+				xArray[2] = riverCursorX
+				tileNum[0] = 60
+				tileNum[1] = 60
+				tileNum[2] = 72
+				curveGen = 2
+			case 2:
+				yArray[0] = riverCursorY
+				yArray[1] = riverCursorY + 1
+				yArray[2] = riverCursorY + 2
+				xArray[0] = riverCursorX
+				xArray[1] = riverCursorX
+				xArray[2] = riverCursorX
+				tileNum[0] = 61
+				tileNum[1] = 61
+				tileNum[2] = 73
+				curveGen = 3
+			case 3:
+				yArray[0] = riverCursorY
+				yArray[1] = riverCursorY + 1
+				yArray[2] = riverCursorY + 2
+				xArray[0] = riverCursorX
+				xArray[1] = riverCursorX
+				xArray[2] = riverCursorX
+				tileNum[0] = 96
+				tileNum[1] = 61
+				tileNum[2] = 73
+				curveGen = 0
+			}
 			riverCursorX++
 			if riverCursorX >= screenLength {
 				shouldContinue = false
 			}
-			if rand.Intn(15) == 0 {
+			if curveGen == 0 && rand.Intn(15) == 0 {
 				ifGoingSouth = !ifGoingSouth
+				curveGen = 1
 			}
 		}
+		riverInfoArray = append(riverInfoArray, riverInfo{yArray[0], xArray[0], tileNum[0]})
+		riverInfoArray = append(riverInfoArray, riverInfo{yArray[1], xArray[1], tileNum[1]})
+		riverInfoArray = append(riverInfoArray, riverInfo{yArray[2], xArray[2], tileNum[2]})
 	}
 	// 引数として受けとったステージ情報を書き換える
 	for _, r := range riverInfoArray {
