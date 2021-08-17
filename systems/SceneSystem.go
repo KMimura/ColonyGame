@@ -224,7 +224,7 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 				curveGen = 0
 			}
 			riverCursorY++
-			if riverCursorY >= screenLength {
+			if riverCursorY >= screenLength || riverCursorX+2 >= screenLength {
 				shouldContinue = false
 			}
 			if curveGen == 0 && rand.Intn(15) == 0 {
@@ -278,7 +278,7 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 				curveGen = 0
 			}
 			riverCursorX++
-			if riverCursorX >= screenLength {
+			if riverCursorX >= screenLength || riverCursorY+2 >= screenLength {
 				shouldContinue = false
 			}
 			if curveGen == 0 && rand.Intn(15) == 0 {
