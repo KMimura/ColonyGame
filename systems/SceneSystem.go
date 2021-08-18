@@ -26,6 +26,8 @@ const cellLength = 48
 
 const screenLength = 50
 
+const minimumForestNum = 4
+
 const createForestMaximumTryCount = 20
 
 type tileInfo struct {
@@ -275,8 +277,7 @@ func createForest(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo
 		tilenum int
 	}
 	var forestInfoArray [][]forestInfo
-	// 最低4個以上の森を、ランダムな個数作成する
-	for i := 0; i < rand.Intn(5)+4; i++ {
+	for i := 0; i < rand.Intn(5)+minimumForestNum; i++ {
 		var tempForestCenter [2]int
 		shouldContinueSelecting := true
 		trialGen := 0
@@ -284,7 +285,9 @@ func createForest(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo
 			tempForestCenter[0] = rand.Intn(screenLength)
 			tempForestCenter[1] = rand.Intn(screenLength)
 			if stageTiles[tempForestCenter[0]][tempForestCenter[1]].tileType == "grass" || trialGen > createForestMaximumTryCount {
-				shouldContinueSelecting = false
+				if tempForestCenter[0] + 1 < screenLength && tempForestCenter[1] + 1 < screenLength && tempForestCenter[0] - 1 > 0 && tempForestCenter[1] - 1 > 0 {
+					shouldContinueSelecting = false
+				}
 			}
 			trialGen++
 		}
