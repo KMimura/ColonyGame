@@ -26,6 +26,8 @@ const cellLength = 48
 
 const screenLength = 50
 
+const createForestMaximumTryCount = 20
+
 type tileInfo struct {
 	spritesheetNum int
 	tileType       string
@@ -107,6 +109,7 @@ func (ss *SceneSystem) init(w *ecs.World) {
 				}
 			}
 			createRiver(w, &stageTiles)
+			createForest(w, &stageTiles)
 			for i, s := range stageTiles {
 				for j, y := range s {
 					tile := &Tile{BasicEntity: ecs.NewBasic()}
@@ -261,5 +264,51 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 	for _, r := range riverInfoArray {
 		stageTiles[r.X][r.Y].spritesheetNum = r.tilenum
 		stageTiles[r.X][r.Y].tileType = "river"
+	}
+}
+
+func createForest(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo) {
+	rand.Seed(time.Now().UnixNano())
+	type forestInfo struct {
+		X       int
+		Y       int
+		tilenum int
+	}
+	var forestInfoArray [][]forestInfo
+	// 最低4個以上の森を、ランダムな個数作成する
+	for i := 0; i < rand.Intn(5)+4; i++ {
+		var tempForestCenter [2]int
+		shouldContinueSelecting := true
+		trialGen := 0
+		for shouldContinueSelecting {
+			tempForestCenter[0] = rand.Intn(screenLength)
+			tempForestCenter[1] = rand.Intn(screenLength)
+			if stageTiles[tempForestCenter[0]][tempForestCenter[1]].tileType == "grass" || trialGen > createForestMaximumTryCount {
+				shouldContinueSelecting = false
+			}
+			trialGen++
+		}
+		// 一定回数以上森の中心を選択しようとして失敗した場合
+		if trialGen > createForestMaximumTryCount {
+			continue
+		}
+		// 森は最低9マスとして、まずその分を描画
+		var tempForestArray []forestInfo
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0], tempForestCenter[1], 70})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0], tempForestCenter[1] - 1, 58})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0] + 1, tempForestCenter[1] - 1, 59})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0] + 1, tempForestCenter[1], 71})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0] + 1, tempForestCenter[1] + 1, 83})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0], tempForestCenter[1] + 1, 82})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0] - 1, tempForestCenter[1] + 1, 81})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0] - 1, tempForestCenter[1], 69})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0] - 1, tempForestCenter[1] - 1, 57})
+		forestInfoArray = append(forestInfoArray, tempForestArray)
+	}
+	for _, r := range forestInfoArray {
+		for _, i := range r {
+			stageTiles[i.Y][i.X].spritesheetNum = i.tilenum
+			stageTiles[i.Y][i.X].tileType = "forest"
+		}
 	}
 }
