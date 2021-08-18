@@ -28,6 +28,7 @@ const screenLength = 50
 
 type tileInfo struct {
 	spritesheetNum int
+	tileType       string
 }
 
 // Tile タイル一つ一つを表す構造体
@@ -102,6 +103,7 @@ func (ss *SceneSystem) init(w *ecs.World) {
 			for i, s := range stageTiles {
 				for j, _ := range s {
 					stageTiles[i][j].spritesheetNum = rand.Intn(4)
+					stageTiles[i][j].tileType = "grass"
 				}
 			}
 			createRiver(w, &stageTiles)
@@ -178,46 +180,28 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 	var tileNum [3]int
 	for shouldContinue {
 		if ifGoingSouth {
+			yArray[0] = riverCursorY
+			yArray[1] = riverCursorY
+			yArray[2] = riverCursorY
+			xArray[0] = riverCursorX
+			xArray[1] = riverCursorX + 1
+			xArray[2] = riverCursorX + 2
 			switch curveGen {
 			case 0:
-				yArray[0] = riverCursorY
-				yArray[1] = riverCursorY
-				yArray[2] = riverCursorY
-				xArray[0] = riverCursorX
-				xArray[1] = riverCursorX + 1
-				xArray[2] = riverCursorX + 2
 				tileNum[0] = 60
 				tileNum[1] = 61
 				tileNum[2] = 62
 			case 1:
-				yArray[0] = riverCursorY
-				yArray[1] = riverCursorY
-				yArray[2] = riverCursorY
-				xArray[0] = riverCursorX
-				xArray[1] = riverCursorX + 1
-				xArray[2] = riverCursorX + 2
 				tileNum[0] = 49
 				tileNum[1] = 49
 				tileNum[2] = 50
 				curveGen = 2
 			case 2:
-				yArray[0] = riverCursorY
-				yArray[1] = riverCursorY
-				yArray[2] = riverCursorY
-				xArray[0] = riverCursorX
-				xArray[1] = riverCursorX + 1
-				xArray[2] = riverCursorX + 2
 				tileNum[0] = 61
 				tileNum[1] = 61
 				tileNum[2] = 62
 				curveGen = 3
 			case 3:
-				yArray[0] = riverCursorY
-				yArray[1] = riverCursorY
-				yArray[2] = riverCursorY
-				xArray[0] = riverCursorX
-				xArray[1] = riverCursorX + 1
-				xArray[2] = riverCursorX + 2
 				tileNum[0] = 85
 				tileNum[1] = 61
 				tileNum[2] = 62
@@ -232,46 +216,29 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 				curveGen = 1
 			}
 		} else {
+			yArray[0] = riverCursorY
+			yArray[1] = riverCursorY + 1
+			yArray[2] = riverCursorY + 2
+			xArray[0] = riverCursorX
+			xArray[1] = riverCursorX
+			xArray[2] = riverCursorX
+
 			switch curveGen {
 			case 0:
-				yArray[0] = riverCursorY
-				yArray[1] = riverCursorY + 1
-				yArray[2] = riverCursorY + 2
-				xArray[0] = riverCursorX
-				xArray[1] = riverCursorX
-				xArray[2] = riverCursorX
 				tileNum[0] = 49
 				tileNum[1] = 61
 				tileNum[2] = 73
 			case 1:
-				yArray[0] = riverCursorY
-				yArray[1] = riverCursorY + 1
-				yArray[2] = riverCursorY + 2
-				xArray[0] = riverCursorX
-				xArray[1] = riverCursorX
-				xArray[2] = riverCursorX
 				tileNum[0] = 60
 				tileNum[1] = 60
 				tileNum[2] = 72
 				curveGen = 2
 			case 2:
-				yArray[0] = riverCursorY
-				yArray[1] = riverCursorY + 1
-				yArray[2] = riverCursorY + 2
-				xArray[0] = riverCursorX
-				xArray[1] = riverCursorX
-				xArray[2] = riverCursorX
 				tileNum[0] = 61
 				tileNum[1] = 61
 				tileNum[2] = 73
 				curveGen = 3
 			case 3:
-				yArray[0] = riverCursorY
-				yArray[1] = riverCursorY + 1
-				yArray[2] = riverCursorY + 2
-				xArray[0] = riverCursorX
-				xArray[1] = riverCursorX
-				xArray[2] = riverCursorX
 				tileNum[0] = 96
 				tileNum[1] = 61
 				tileNum[2] = 73
@@ -293,5 +260,6 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 	// 引数として受けとったステージ情報を書き換える
 	for _, r := range riverInfoArray {
 		stageTiles[r.X][r.Y].spritesheetNum = r.tilenum
+		stageTiles[r.X][r.Y].tileType = "river"
 	}
 }
