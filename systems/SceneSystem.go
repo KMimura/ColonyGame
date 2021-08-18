@@ -157,13 +157,13 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 	var riverInfoArray []riverInfo
 	// 初期位置作成
 	if ifGoingSouth {
-		riverInfoArray = append(riverInfoArray, riverInfo{0, riverStartPoint, 60})
-		riverInfoArray = append(riverInfoArray, riverInfo{0, riverStartPoint + 1, 61})
-		riverInfoArray = append(riverInfoArray, riverInfo{0, riverStartPoint + 2, 62})
-	} else {
-		riverInfoArray = append(riverInfoArray, riverInfo{riverStartPoint, 0, 49})
+		riverInfoArray = append(riverInfoArray, riverInfo{riverStartPoint, 0, 60})
 		riverInfoArray = append(riverInfoArray, riverInfo{riverStartPoint + 1, 0, 61})
-		riverInfoArray = append(riverInfoArray, riverInfo{riverStartPoint + 2, 0, 73})
+		riverInfoArray = append(riverInfoArray, riverInfo{riverStartPoint + 2, 0, 62})
+	} else {
+		riverInfoArray = append(riverInfoArray, riverInfo{0, riverStartPoint, 49})
+		riverInfoArray = append(riverInfoArray, riverInfo{0, riverStartPoint + 1, 61})
+		riverInfoArray = append(riverInfoArray, riverInfo{0, riverStartPoint + 2, 73})
 	}
 
 	// 初期値以降作成
@@ -258,14 +258,14 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 				curveGen = 1
 			}
 		}
-		riverInfoArray = append(riverInfoArray, riverInfo{yArray[0], xArray[0], tileNum[0]})
-		riverInfoArray = append(riverInfoArray, riverInfo{yArray[1], xArray[1], tileNum[1]})
-		riverInfoArray = append(riverInfoArray, riverInfo{yArray[2], xArray[2], tileNum[2]})
+		riverInfoArray = append(riverInfoArray, riverInfo{xArray[0], yArray[0], tileNum[0]})
+		riverInfoArray = append(riverInfoArray, riverInfo{xArray[1], yArray[1], tileNum[1]})
+		riverInfoArray = append(riverInfoArray, riverInfo{xArray[2], yArray[2], tileNum[2]})
 	}
 	// 引数として受けとったステージ情報を書き換える
 	for _, r := range riverInfoArray {
-		stageTiles[r.X][r.Y].spritesheetNum = r.tilenum
-		stageTiles[r.X][r.Y].tileType = "river"
+		stageTiles[r.Y][r.X].spritesheetNum = r.tilenum
+		stageTiles[r.Y][r.X].tileType = "river"
 	}
 }
 
