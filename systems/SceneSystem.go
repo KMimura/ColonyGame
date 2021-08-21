@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	// "reflect"
+
 	"time"
 
 	"github.com/EngoEngine/ecs"
@@ -26,7 +27,7 @@ const cellLength = 48
 
 const screenLength = 50
 
-const minimumForestNum = 4
+const minimumForestNum = 20
 
 const createForestMaximumTryCount = 20
 
@@ -284,9 +285,17 @@ func createForest(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo
 		for shouldContinueSelecting {
 			tempForestCenter[0] = rand.Intn(screenLength)
 			tempForestCenter[1] = rand.Intn(screenLength)
-			if stageTiles[tempForestCenter[0]][tempForestCenter[1]].tileType == "grass" || trialGen > createForestMaximumTryCount {
-				if tempForestCenter[0] + 1 < screenLength && tempForestCenter[1] + 1 < screenLength && tempForestCenter[0] - 1 > 0 && tempForestCenter[1] - 1 > 0 {
-					shouldContinueSelecting = false
+			if trialGen > createForestMaximumTryCount {
+				shouldContinueSelecting = false
+			}
+			if tempForestCenter[0]+1 < screenLength && tempForestCenter[1]+1 < screenLength && tempForestCenter[0]-1 > 0 && tempForestCenter[1]-1 > 0 {
+				shouldContinueSelecting = false
+				for y := -1; y < 2; y++ {
+					for x := -1; x < 2; x++ {
+						if stageTiles[tempForestCenter[0]+y][tempForestCenter[1]+x].tileType != "grass" {
+							shouldContinueSelecting = true
+						}
+					}
 				}
 			}
 			trialGen++
@@ -297,15 +306,15 @@ func createForest(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo
 		}
 		// 森は最低9マスとして、まずその分を描画
 		var tempForestArray []forestInfo
-		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0], tempForestCenter[1], 70})
-		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0], tempForestCenter[1] - 1, 58})
-		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0] + 1, tempForestCenter[1] - 1, 59})
-		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0] + 1, tempForestCenter[1], 71})
-		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0] + 1, tempForestCenter[1] + 1, 83})
-		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0], tempForestCenter[1] + 1, 82})
-		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0] - 1, tempForestCenter[1] + 1, 81})
-		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0] - 1, tempForestCenter[1], 69})
-		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[0] - 1, tempForestCenter[1] - 1, 57})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[1], tempForestCenter[0], 70})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[1] - 1, tempForestCenter[0], 69})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[1] - 1, tempForestCenter[0] + 1, 81})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[1], tempForestCenter[0] + 1, 82})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[1] + 1, tempForestCenter[0] + 1, 83})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[1] + 1, tempForestCenter[0], 71})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[1] + 1, tempForestCenter[0] - 1, 59})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[1], tempForestCenter[0] - 1, 58})
+		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[1] - 1, tempForestCenter[0] - 1, 57})
 		forestInfoArray = append(forestInfoArray, tempForestArray)
 	}
 	for _, r := range forestInfoArray {
