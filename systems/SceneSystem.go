@@ -180,6 +180,7 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 	// 川の蛇行を始めてからの時間
 	curveGen := 0
 	shouldContinue := true
+	shouldAppend := true
 	var yArray [3]int
 	var xArray [3]int
 	var tileNum [3]int
@@ -213,8 +214,11 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 				curveGen = 0
 			}
 			riverCursorY++
-			if riverCursorY >= screenLength || riverCursorX+2 >= screenLength {
+			if riverCursorY >= screenLength {
 				shouldContinue = false
+			}
+			if riverCursorX+2 > screenLength {
+				shouldAppend = false
 			}
 			if curveGen == 0 && rand.Intn(15) == 0 {
 				ifGoingSouth = !ifGoingSouth
@@ -250,17 +254,24 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 				curveGen = 0
 			}
 			riverCursorX++
-			if riverCursorX >= screenLength || riverCursorY+2 >= screenLength {
+			if riverCursorX >= screenLength {
 				shouldContinue = false
+			}
+			if riverCursorY+2 > screenLength {
+				shouldAppend = false
 			}
 			if curveGen == 0 && rand.Intn(15) == 0 {
 				ifGoingSouth = !ifGoingSouth
 				curveGen = 1
 			}
 		}
-		riverInfoArray = append(riverInfoArray, riverInfo{xArray[0], yArray[0], tileNum[0]})
-		riverInfoArray = append(riverInfoArray, riverInfo{xArray[1], yArray[1], tileNum[1]})
-		riverInfoArray = append(riverInfoArray, riverInfo{xArray[2], yArray[2], tileNum[2]})
+		if shouldAppend {
+			riverInfoArray = append(riverInfoArray, riverInfo{xArray[0], yArray[0], tileNum[0]})
+			riverInfoArray = append(riverInfoArray, riverInfo{xArray[1], yArray[1], tileNum[1]})
+			riverInfoArray = append(riverInfoArray, riverInfo{xArray[2], yArray[2], tileNum[2]})
+		} else {
+			shouldAppend = true
+		}
 	}
 	// 引数として受けとったステージ情報を書き換える
 	for _, r := range riverInfoArray {
