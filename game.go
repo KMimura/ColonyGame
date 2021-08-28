@@ -26,6 +26,7 @@ func (*MainScene) Type() string { return "mainScene" }
 
 func (*MainScene) Preload() {
 	engo.Files.Load("pics/overworld_tileset_grass.png")
+	engo.Files.Load("pics/characters.png")
 	// engo.Files.LoadReaderData("go.ttf", bytes.NewReader(gosmallcaps.TTF))
 	common.SetBackground(color.RGBA{255, 250, 220, 0})
 }
@@ -39,7 +40,7 @@ func (*MainScene) Setup(u engo.Updater) {
 	world, _ := u.(*ecs.World)
 	world.AddSystem(&common.RenderSystem{})
 	world.AddSystem(&systems.SceneSystem{})
-	// world.AddSystem(&systems.PlayerSystem{})
+	world.AddSystem(&systems.PlayerSystem{})
 	// world.AddSystem(&systems.EnemySystem{})
 	// world.AddSystem(&systems.BulletSystem{})
 	// world.AddSystem(&systems.IntermissionSystem{})

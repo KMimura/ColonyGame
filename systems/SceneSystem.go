@@ -100,7 +100,6 @@ func (ss *SceneSystem) init(w *ecs.World) {
 	// 素材シートの読み込み
 	loadTxt := "pics/overworld_tileset_grass.png"
 	Spritesheet = common.NewSpritesheetWithBorderFromFile(loadTxt, 16, 16, 0, 0)
-	// createRiver(ss.world)
 	for _, system := range ss.world.Systems() {
 		switch sys := system.(type) {
 		case *common.RenderSystem:
