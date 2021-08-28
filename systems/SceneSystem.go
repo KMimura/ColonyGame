@@ -36,8 +36,8 @@ const minimumForestNum = 20
 const createForestMaximumTryCount = 20
 
 type tileInfo struct {
-	spritesheetNum int
-	tileType       string
+	SpritesheetNum int
+	TileType       string
 }
 
 // Tile タイル一つ一つを表す構造体
@@ -77,22 +77,30 @@ func (ss *SceneSystem) New(w *ecs.World) {
 
 // Init 初期化
 func (ss *SceneSystem) init(w *ecs.World) {
-	rand.Seed(time.Now().UnixNano())
-	ss.world = w
-	// 素材シートの読み込み
 	loadTxt := "pics/overworld_tileset_grass.png"
 	Spritesheet = common.NewSpritesheetWithBorderFromFile(loadTxt, 16, 16, 0, 0)
+	_, err := os.Stat("save/save.gob")
+	if err != nil {
+		rand.Seed(time.Now().UnixNano())
+		// 素材シートの読み込み
+		for i, s := range stageTiles {
+			for j, _ := range s {
+				stageTiles[i][j].SpritesheetNum = rand.Intn(4)
+				stageTiles[i][j].TileType = "grass"
+			}
+		}
+		createRiver(w, &stageTiles)
+		createForest(w, &stageTiles)
+	} else {
+		file, _ := os.Open("save/save.gob")
+		defer file.Close()
+		decoder := gob.NewDecoder(file)
+		err = decoder.Decode(&stageTiles)
+	}
+	ss.world = w
 	for _, system := range ss.world.Systems() {
 		switch sys := system.(type) {
 		case *common.RenderSystem:
-			for i, s := range stageTiles {
-				for j, _ := range s {
-					stageTiles[i][j].spritesheetNum = rand.Intn(4)
-					stageTiles[i][j].tileType = "grass"
-				}
-			}
-			createRiver(w, &stageTiles)
-			createForest(w, &stageTiles)
 			for i, s := range stageTiles {
 				for j, y := range s {
 					tile := &Tile{BasicEntity: ecs.NewBasic()}
@@ -101,13 +109,14 @@ func (ss *SceneSystem) init(w *ecs.World) {
 						Y: float32(i * cellLength),
 					}
 					tile.RenderComponent = common.RenderComponent{
-						Drawable: Spritesheet.Cell(y.spritesheetNum),
+						Drawable: Spritesheet.Cell(y.SpritesheetNum),
 						Scale:    engo.Point{X: float32(cellLength / 16), Y: float32(cellLength / 16)},
 					}
 					tile.RenderComponent.SetZIndex(0)
 					sys.Add(&tile.BasicEntity, &tile.RenderComponent, &tile.SpaceComponent)
 				}
 			}
+
 		}
 	}
 	// カメラエンティティの取得
@@ -256,8 +265,8 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 	}
 	// 引数として受けとったステージ情報を書き換える
 	for _, r := range riverInfoArray {
-		stageTiles[r.Y][r.X].spritesheetNum = r.tilenum
-		stageTiles[r.Y][r.X].tileType = "river"
+		stageTiles[r.Y][r.X].SpritesheetNum = r.tilenum
+		stageTiles[r.Y][r.X].TileType = "river"
 	}
 }
 
@@ -283,7 +292,7 @@ func createForest(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo
 				shouldContinueSelecting = false
 				for y := -1; y < 2; y++ {
 					for x := -1; x < 2; x++ {
-						if stageTiles[tempForestCenter[0]+y][tempForestCenter[1]+x].tileType != "grass" {
+						if stageTiles[tempForestCenter[0]+y][tempForestCenter[1]+x].TileType != "grass" {
 							shouldContinueSelecting = true
 						}
 					}
@@ -310,8 +319,8 @@ func createForest(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo
 	}
 	for _, r := range forestInfoArray {
 		for _, i := range r {
-			stageTiles[i.Y][i.X].spritesheetNum = i.tilenum
-			stageTiles[i.Y][i.X].tileType = "forest"
+			stageTiles[i.Y][i.X].SpritesheetNum = i.tilenum
+			stageTiles[i.Y][i.X].TileType = "forest"
 		}
 	}
 }
