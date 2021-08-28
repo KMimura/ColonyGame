@@ -37,6 +37,7 @@ func (*MainScene) Setup(u engo.Updater) {
 	engo.Input.RegisterButton("MoveUp", engo.KeyW, engo.KeyArrowUp)
 	engo.Input.RegisterButton("MoveDown", engo.KeyS, engo.KeyArrowDown)
 	engo.Input.RegisterButton("Space", engo.KeySpace)
+	engo.Input.RegisterButton("Escape", engo.KeyEscape)
 	world, _ := u.(*ecs.World)
 	world.AddSystem(&common.RenderSystem{})
 	world.AddSystem(&systems.SceneSystem{})

@@ -1,7 +1,9 @@
 package systems
 
 import (
+	"encoding/gob"
 	"math/rand"
+	"os"
 
 	// "reflect"
 
@@ -21,6 +23,8 @@ var camEntity *common.CameraSystem
 // cameraInitialPositionX,Y カメラの初期位置
 var cameraInitialPositionX int
 var cameraInitialPositionY int
+
+var stageTiles [screenLength][screenLength]tileInfo
 
 // cellLength セル一辺のピクセル数（必ず16の倍数にすること）
 const cellLength = 48
@@ -61,30 +65,8 @@ func (ss *SceneSystem) Remove(entity ecs.BasicEntity) {
 
 // Update アップデートする
 func (ss *SceneSystem) Update(dt float32) {
-	if engo.Input.Button("MoveUp").Down() {
-		engo.Mailbox.Dispatch(common.CameraMessage{
-			Axis:        common.YAxis,
-			Value:       -16,
-			Incremental: true,
-		})
-	} else if engo.Input.Button("MoveDown").Down() {
-		engo.Mailbox.Dispatch(common.CameraMessage{
-			Axis:        common.YAxis,
-			Value:       16,
-			Incremental: true,
-		})
-	} else if engo.Input.Button("MoveLeft").Down() {
-		engo.Mailbox.Dispatch(common.CameraMessage{
-			Axis:        common.XAxis,
-			Value:       -16,
-			Incremental: true,
-		})
-	} else if engo.Input.Button("MoveRight").Down() {
-		engo.Mailbox.Dispatch(common.CameraMessage{
-			Axis:        common.XAxis,
-			Value:       16,
-			Incremental: true,
-		})
+	if engo.Input.Button("Escape").Down() {
+		escape()
 	}
 }
 
@@ -103,7 +85,6 @@ func (ss *SceneSystem) init(w *ecs.World) {
 	for _, system := range ss.world.Systems() {
 		switch sys := system.(type) {
 		case *common.RenderSystem:
-			var stageTiles [screenLength][screenLength]tileInfo
 			for i, s := range stageTiles {
 				for j, _ := range s {
 					stageTiles[i][j].spritesheetNum = rand.Intn(4)
@@ -333,4 +314,13 @@ func createForest(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo
 			stageTiles[i.Y][i.X].tileType = "forest"
 		}
 	}
+}
+
+// ゲームを終了する
+func escape() {
+	file, _ := os.Create("save/save.gob")
+	defer file.Close()
+	encoder := gob.NewEncoder(file)
+	encoder.Encode(stageTiles)
+	engo.Exit()
 }

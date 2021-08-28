@@ -68,6 +68,31 @@ func (ps *PlayerSystem) Remove(entity ecs.BasicEntity) {
 
 // Update アップデートする
 func (ps *PlayerSystem) Update(dt float32) {
+	if engo.Input.Button("MoveUp").Down() {
+		engo.Mailbox.Dispatch(common.CameraMessage{
+			Axis:        common.YAxis,
+			Value:       -16,
+			Incremental: true,
+		})
+	} else if engo.Input.Button("MoveDown").Down() {
+		engo.Mailbox.Dispatch(common.CameraMessage{
+			Axis:        common.YAxis,
+			Value:       16,
+			Incremental: true,
+		})
+	} else if engo.Input.Button("MoveLeft").Down() {
+		engo.Mailbox.Dispatch(common.CameraMessage{
+			Axis:        common.XAxis,
+			Value:       -16,
+			Incremental: true,
+		})
+	} else if engo.Input.Button("MoveRight").Down() {
+		engo.Mailbox.Dispatch(common.CameraMessage{
+			Axis:        common.XAxis,
+			Value:       16,
+			Incremental: true,
+		})
+	}
 
 }
 
