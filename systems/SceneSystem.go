@@ -337,3 +337,10 @@ func escape() {
 	encoder.Encode(stageTiles)
 	engo.Exit()
 }
+
+func checkIfPassable(x, y int) bool {
+	if x > len(stageTiles) || y > len(stageTiles[x]) {
+		return false
+	}
+	return stageTiles[x][y].IfPassable
+}

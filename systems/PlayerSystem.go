@@ -1,6 +1,9 @@
 package systems
 
 import (
+	"math/rand"
+	"time"
+
 	"github.com/EngoEngine/ecs"
 	"github.com/EngoEngine/engo"
 	"github.com/EngoEngine/engo/common"
@@ -98,6 +101,7 @@ func (ps *PlayerSystem) Update(dt float32) {
 
 // Init 初期化
 func (ps *PlayerSystem) Init(w *ecs.World) {
+	rand.Seed(time.Now().UnixNano())
 	ps.world = w
 	// プレーヤーの作成
 	player := Player{BasicEntity: ecs.NewBasic()}
@@ -112,8 +116,16 @@ func (ps *PlayerSystem) Init(w *ecs.World) {
 	playerInstance = &player
 
 	// 初期の配置
-	player.cellX = 10
-	player.cellY = 10
+	ifKeepSearching := true
+	if ifKeepSearching {
+		tmpX := rand.Intn(screenLength)
+		tmpY := rand.Intn(screenLength)
+		if checkIfPassable(tmpX, tmpY) {
+			ifKeepSearching = false
+			player.cellX = tmpX
+			player.cellY = tmpY
+		}
+	}
 	positionX := cellLength * player.cellX
 	positionY := cellLength * player.cellY
 	player.SpaceComponent = common.SpaceComponent{
@@ -127,7 +139,7 @@ func (ps *PlayerSystem) Init(w *ecs.World) {
 	loadTxt := "pics/characters.png"
 	Spritesheet = common.NewSpritesheetWithBorderFromFile(loadTxt, 32, 32, 0, 0)
 
-	topPicTmpOne := Spritesheet.Cell(9)
+	topPicTmpOne := Spritesheet.Cell(2)
 	topPicOne = &topPicTmpOne
 
 	player.RenderComponent = common.RenderComponent{
