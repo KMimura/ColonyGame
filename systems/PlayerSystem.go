@@ -18,8 +18,6 @@ type Player struct {
 	remainingHearts  int     // ライフ
 	immunityTime     int     // ダメージを受けない状態の残り時間
 	velocity         float32 // 移動の速度
-	cellX            int     // セルのX座標
-	cellY            int     // セルのY座標
 	destinationPoint float32 // 移動の目標地点の座標
 	facingDirection  int     // どの方向を向いているか (1 => 上, 2 => 右, 3 => 下 4 => 左)
 	movingPic        bool    //移動中の画像を表示するかどうか
@@ -116,18 +114,18 @@ func (ps *PlayerSystem) Init(w *ecs.World) {
 	playerInstance = &player
 
 	// 初期の配置
+	var positionX int
+	var positionY int
 	ifKeepSearching := true
 	if ifKeepSearching {
 		tmpX := rand.Intn(screenLength)
 		tmpY := rand.Intn(screenLength)
 		if checkIfPassable(tmpX, tmpY) {
 			ifKeepSearching = false
-			player.cellX = tmpX
-			player.cellY = tmpY
+			positionX = cellLength * tmpX
+			positionY = cellLength * tmpY
 		}
 	}
-	positionX := cellLength * player.cellX
-	positionY := cellLength * player.cellY
 	player.SpaceComponent = common.SpaceComponent{
 		Position: engo.Point{X: float32(positionX), Y: float32(positionY)},
 		Width:    30,
