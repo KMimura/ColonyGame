@@ -38,6 +38,7 @@ const createForestMaximumTryCount = 20
 type tileInfo struct {
 	SpritesheetNum int
 	TileType       string
+	IfPassable     bool
 }
 
 // Tile タイル一つ一つを表す構造体
@@ -87,6 +88,7 @@ func (ss *SceneSystem) init(w *ecs.World) {
 			for j, _ := range s {
 				stageTiles[i][j].SpritesheetNum = rand.Intn(4)
 				stageTiles[i][j].TileType = "grass"
+				stageTiles[i][j].IfPassable = true
 			}
 		}
 		createRiver(w, &stageTiles)
@@ -267,6 +269,7 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 	for _, r := range riverInfoArray {
 		stageTiles[r.Y][r.X].SpritesheetNum = r.tilenum
 		stageTiles[r.Y][r.X].TileType = "river"
+		stageTiles[r.Y][r.X].IfPassable = false
 	}
 }
 
@@ -321,6 +324,7 @@ func createForest(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo
 		for _, i := range r {
 			stageTiles[i.Y][i.X].SpritesheetNum = i.tilenum
 			stageTiles[i.Y][i.X].TileType = "forest"
+			stageTiles[i.Y][i.X].IfPassable = false
 		}
 	}
 }
