@@ -316,15 +316,7 @@ func createForest(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo
 			stageTiles[i.Y][i.X].TileType = "forest"
 			stageTiles[i.Y][i.X].IfPassable = false
 		}
-		// forestInfoArray = append(forestInfoArray, tempForestArray)
 	}
-	// for _, r := range forestInfoArray {
-	// 	for _, i := range r {
-	// 		stageTiles[i.Y][i.X].SpritesheetNum = i.tilenum
-	// 		stageTiles[i.Y][i.X].TileType = "forest"
-	// 		stageTiles[i.Y][i.X].IfPassable = false
-	// 	}
-	// }
 }
 
 // ゲームを終了する
@@ -337,7 +329,7 @@ func escape() {
 }
 
 func checkIfPassable(x, y int) bool {
-	if y > len(stageTiles) || x > len(stageTiles[y]) {
+	if y > screenLength || x > screenLength || y < 0 || x < 0 {
 		return false
 	}
 	return stageTiles[y][x].IfPassable
