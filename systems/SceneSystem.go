@@ -31,7 +31,7 @@ const cellLength = 48
 
 const screenLength = 50
 
-const minimumForestNum = 20
+const minimumForestNum = 25
 
 const createForestMaximumTryCount = 20
 
@@ -121,15 +121,6 @@ func (ss *SceneSystem) init(w *ecs.World) {
 
 		}
 	}
-	// カメラエンティティの取得
-	for _, system := range w.Systems() {
-		switch sys := system.(type) {
-		case *common.CameraSystem:
-			camEntity = sys
-			common.CameraBounds.Max.X = float32(screenLength * cellLength)
-			common.CameraBounds.Max.Y = float32(screenLength * cellLength)
-		}
-	}
 }
 
 func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo) {
@@ -211,6 +202,7 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 			}
 			if riverCursorX+2 > screenLength {
 				shouldAppend = false
+				shouldContinue = false
 			}
 			if curveGen == 0 && rand.Intn(15) == 0 {
 				ifGoingSouth = !ifGoingSouth
@@ -251,6 +243,7 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 			}
 			if riverCursorY+2 > screenLength {
 				shouldAppend = false
+				shouldContinue = false
 			}
 			if curveGen == 0 && rand.Intn(15) == 0 {
 				ifGoingSouth = !ifGoingSouth
@@ -280,7 +273,7 @@ func createForest(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo
 		Y       int
 		tilenum int
 	}
-	var forestInfoArray [][]forestInfo
+	// var forestInfoArray [][]forestInfo
 	for i := 0; i < rand.Intn(5)+minimumForestNum; i++ {
 		var tempForestCenter [2]int
 		shouldContinueSelecting := true
@@ -318,15 +311,20 @@ func createForest(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo
 		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[1] + 1, tempForestCenter[0] - 1, 59})
 		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[1], tempForestCenter[0] - 1, 58})
 		tempForestArray = append(tempForestArray, forestInfo{tempForestCenter[1] - 1, tempForestCenter[0] - 1, 57})
-		forestInfoArray = append(forestInfoArray, tempForestArray)
-	}
-	for _, r := range forestInfoArray {
-		for _, i := range r {
+		for _, i := range tempForestArray {
 			stageTiles[i.Y][i.X].SpritesheetNum = i.tilenum
 			stageTiles[i.Y][i.X].TileType = "forest"
 			stageTiles[i.Y][i.X].IfPassable = false
 		}
+		// forestInfoArray = append(forestInfoArray, tempForestArray)
 	}
+	// for _, r := range forestInfoArray {
+	// 	for _, i := range r {
+	// 		stageTiles[i.Y][i.X].SpritesheetNum = i.tilenum
+	// 		stageTiles[i.Y][i.X].TileType = "forest"
+	// 		stageTiles[i.Y][i.X].IfPassable = false
+	// 	}
+	// }
 }
 
 // ゲームを終了する
@@ -339,8 +337,8 @@ func escape() {
 }
 
 func checkIfPassable(x, y int) bool {
-	if x > len(stageTiles) || y > len(stageTiles[x]) {
+	if y > len(stageTiles) || x > len(stageTiles[y]) {
 		return false
 	}
-	return stageTiles[x][y].IfPassable
+	return stageTiles[y][x].IfPassable
 }

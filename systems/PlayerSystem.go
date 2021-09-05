@@ -234,14 +234,13 @@ func (ps *PlayerSystem) Init(w *ecs.World) {
 	player.direction = 0
 	player.facingDirection = 1
 	player.movingPic = false
-	player.velocity = 4
 	playerInstance = &player
 
 	// 初期の配置
 	ifKeepSearching := true
 	if ifKeepSearching {
-		tmpX := rand.Intn(screenLength)
-		tmpY := rand.Intn(screenLength)
+		tmpX := rand.Intn(20)
+		tmpY := rand.Intn(20)
 		if checkIfPassable(tmpX, tmpY) {
 			ifKeepSearching = false
 			player.cellX = tmpX
@@ -256,7 +255,7 @@ func (ps *PlayerSystem) Init(w *ecs.World) {
 		Height:   30,
 	}
 	// 速度
-	player.velocity = 4
+	player.velocity = 16
 	// 画像の読み込み
 	loadTxt := "pics/characters.png"
 	Spritesheet = common.NewSpritesheetWithBorderFromFile(loadTxt, 32, 32, 0, 0)
@@ -275,6 +274,15 @@ func (ps *PlayerSystem) Init(w *ecs.World) {
 		switch sys := system.(type) {
 		case *common.RenderSystem:
 			sys.Add(&player.BasicEntity, &player.RenderComponent, &player.SpaceComponent)
+		}
+	}
+	// カメラエンティティの取得
+	for _, system := range w.Systems() {
+		switch sys := system.(type) {
+		case *common.CameraSystem:
+			camEntity = sys
+			common.CameraBounds.Max.X = float32(screenLength * cellLength)
+			common.CameraBounds.Max.Y = float32(screenLength * cellLength)
 		}
 	}
 }
