@@ -2,6 +2,7 @@ package systems
 
 import (
 	"encoding/gob"
+	"fmt"
 	"math/rand"
 	"os"
 
@@ -81,11 +82,12 @@ func (ss *SceneSystem) init(w *ecs.World) {
 	loadTxt := "pics/overworld_tileset_grass.png"
 	Spritesheet = common.NewSpritesheetWithBorderFromFile(loadTxt, 16, 16, 0, 0)
 	_, err := os.Stat("save/save.gob")
+	fmt.Println(err)
 	if err != nil {
 		rand.Seed(time.Now().UnixNano())
 		// 素材シートの読み込み
 		for i, s := range stageTiles {
-			for j, _ := range s {
+			for j := range s {
 				stageTiles[i][j].SpritesheetNum = rand.Intn(4)
 				stageTiles[i][j].TileType = "grass"
 				stageTiles[i][j].IfPassable = true
@@ -94,6 +96,7 @@ func (ss *SceneSystem) init(w *ecs.World) {
 		createRiver(w, &stageTiles)
 		createForest(w, &stageTiles)
 	} else {
+		fmt.Println("a")
 		file, _ := os.Open("save/save.gob")
 		defer file.Close()
 		decoder := gob.NewDecoder(file)
