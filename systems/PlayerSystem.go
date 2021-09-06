@@ -43,16 +43,12 @@ var transparentPic *common.Texture
 // それぞれの向きのプレーヤーの画像
 var topPicOne *common.Texture
 var topPicTwo *common.Texture
-var topPicThree *common.Texture
 var rightPicOne *common.Texture
 var rightPicTwo *common.Texture
-var rightPicThree *common.Texture
 var bottomPicOne *common.Texture
 var bottomPicTwo *common.Texture
-var bottomPicThree *common.Texture
 var leftPicOne *common.Texture
 var leftPicTwo *common.Texture
-var leftPicThree *common.Texture
 
 // New 新規作成時に呼び出される
 func (ps *PlayerSystem) New(w *ecs.World) {
@@ -262,6 +258,20 @@ func (ps *PlayerSystem) Init(w *ecs.World) {
 
 	topPicTmpOne := Spritesheet.Cell(2)
 	topPicOne = &topPicTmpOne
+	topPicTmpTwo := Spritesheet.Cell(3)
+	topPicTwo = &topPicTmpTwo
+	rightPicTmpOne := Spritesheet.Cell(22)
+	rightPicOne = &rightPicTmpOne
+	rightPicTmpTwo := Spritesheet.Cell(23)
+	rightPicTwo = &rightPicTmpTwo
+	bottomPicTmpOne := Spritesheet.Cell(42)
+	bottomPicOne = &bottomPicTmpOne
+	bottomPicTmpTwo := Spritesheet.Cell(43)
+	bottomPicTwo = &bottomPicTmpTwo
+	leftPicTmpOne := Spritesheet.Cell(62)
+	leftPicOne = &leftPicTmpOne
+	leftPicTmpTwo := Spritesheet.Cell(63)
+	leftPicTwo = &leftPicTmpTwo
 
 	player.RenderComponent = common.RenderComponent{
 		Drawable: topPicOne,
