@@ -36,7 +36,7 @@ type PlayerSystem struct {
 var playerInstance *Player
 
 // 画像の半径
-var playerRadius float32 = 12.5
+var playerRadius float32 = 18
 
 var transparentPic *common.Texture
 
@@ -288,8 +288,8 @@ func (ps *PlayerSystem) Init(w *ecs.World) {
 	positionY := cellLength * player.cellY
 	player.SpaceComponent = common.SpaceComponent{
 		Position: engo.Point{X: float32(positionX), Y: float32(positionY)},
-		Width:    30,
-		Height:   30,
+		Width:    45,
+		Height:   45,
 	}
 	// 速度
 	player.velocity = 16
@@ -316,7 +316,7 @@ func (ps *PlayerSystem) Init(w *ecs.World) {
 
 	player.RenderComponent = common.RenderComponent{
 		Drawable: topPicOne,
-		Scale:    engo.Point{X: 1.5, Y: 1.5},
+		Scale:    engo.Point{X: 2.25, Y: 2.25},
 	}
 	player.RenderComponent.SetZIndex(1)
 	ps.playerEntity = &player
