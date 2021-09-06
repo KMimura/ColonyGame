@@ -214,7 +214,48 @@ func (ps *PlayerSystem) Update(dt float32) {
 			})
 		}
 	}
-
+	switch ps.playerEntity.facingDirection {
+	case 1:
+		if playerInstance.direction == 0 {
+			ps.playerEntity.RenderComponent.Drawable = topPicOne
+		} else {
+			if ps.playerEntity.movingPic {
+				ps.playerEntity.RenderComponent.Drawable = topPicTwo
+			} else {
+				ps.playerEntity.RenderComponent.Drawable = topPicOne
+			}
+		}
+	case 2:
+		if playerInstance.direction == 0 {
+			ps.playerEntity.RenderComponent.Drawable = rightPicOne
+		} else {
+			if ps.playerEntity.movingPic {
+				ps.playerEntity.RenderComponent.Drawable = rightPicTwo
+			} else {
+				ps.playerEntity.RenderComponent.Drawable = rightPicOne
+			}
+		}
+	case 3:
+		if playerInstance.direction == 0 {
+			ps.playerEntity.RenderComponent.Drawable = bottomPicOne
+		} else {
+			if ps.playerEntity.movingPic {
+				ps.playerEntity.RenderComponent.Drawable = bottomPicTwo
+			} else {
+				ps.playerEntity.RenderComponent.Drawable = bottomPicOne
+			}
+		}
+	case 4:
+		if playerInstance.direction == 0 {
+			ps.playerEntity.RenderComponent.Drawable = leftPicOne
+		} else {
+			if ps.playerEntity.movingPic {
+				ps.playerEntity.RenderComponent.Drawable = leftPicTwo
+			} else {
+				ps.playerEntity.RenderComponent.Drawable = leftPicOne
+			}
+		}
+	}
 }
 
 // Init 初期化
