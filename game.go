@@ -42,7 +42,7 @@ func (*MainScene) Setup(u engo.Updater) {
 	world.AddSystem(&common.RenderSystem{})
 	world.AddSystem(&systems.SceneSystem{})
 	world.AddSystem(&systems.PlayerSystem{})
-	// world.AddSystem(&systems.EnemySystem{})
+	world.AddSystem(&systems.ItemMenuSystem{})
 	// world.AddSystem(&systems.BulletSystem{})
 	// world.AddSystem(&systems.IntermissionSystem{})
 }
