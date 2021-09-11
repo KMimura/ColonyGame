@@ -1,6 +1,7 @@
 package systems
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 
@@ -22,15 +23,16 @@ type ItemMenuSystem struct {
 }
 
 func (ims *ItemMenuSystem) SetUp(w *ecs.World) {
+	fmt.Println('s')
 	itemMenu := itemMenu{BasicEntity: ecs.NewBasic()}
 	itemMenu.SpaceComponent = common.SpaceComponent{
-		Position: engo.Point{X: 0, Y: engo.WindowHeight() - 200},
+		Position: engo.Point{X: engo.WindowWidth() - 50, Y: engo.WindowHeight() - 50},
 		Width:    200,
 		Height:   200,
 	}
 	itemMenu.RenderComponent.SetZIndex(1)
-	hudImage := image.NewUniform(color.RGBA{205, 205, 205, 255})
-	hudNRGBA := common.ImageToNRGBA(hudImage, 200, 200)
+	hudImage := image.NewUniform(color.RGBA{0, 0, 0, 0})
+	hudNRGBA := common.ImageToNRGBA(hudImage, 16, 16)
 	hudImageObj := common.NewImageObject(hudNRGBA)
 	hudTexture := common.NewTextureSingle(hudImageObj)
 	itemMenu.RenderComponent = common.RenderComponent{
@@ -39,6 +41,7 @@ func (ims *ItemMenuSystem) SetUp(w *ecs.World) {
 		Scale:    engo.Point{X: 1, Y: 1},
 	}
 	itemMenu.RenderComponent.SetShader(common.HUDShader)
+	itemMenu.RenderComponent.SetZIndex(1)
 	for _, system := range ims.world.Systems() {
 		switch sys := system.(type) {
 		case *common.RenderSystem:
