@@ -52,13 +52,13 @@ func (*MainScene) Setup(u engo.Updater) {
 
 	itemMenu := itemMenu{BasicEntity: ecs.NewBasic()}
 	itemMenu.SpaceComponent = common.SpaceComponent{
-		Position: engo.Point{X: engo.WindowWidth() - 50, Y: engo.WindowHeight() - 50},
-		Width:    200,
-		Height:   200,
+		Position: engo.Point{X: engo.WindowWidth() - 1000, Y: engo.WindowHeight() - 700},
+		Width:    300,
+		Height:   900,
 	}
 	itemMenu.RenderComponent.SetZIndex(1)
-	hudImage := image.NewUniform(color.RGBA{205, 205, 205, 255})
-	hudNRGBA := common.ImageToNRGBA(hudImage, 200, 200)
+	hudImage := image.NewUniform(color.RGBA{175, 175, 175, 225})
+	hudNRGBA := common.ImageToNRGBA(hudImage, 300, 900)
 	hudImageObj := common.NewImageObject(hudNRGBA)
 	hudTexture := common.NewTextureSingle(hudImageObj)
 	itemMenu.RenderComponent = common.RenderComponent{
