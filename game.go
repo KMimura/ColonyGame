@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"image"
 	"image/color"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/EngoEngine/engo"
 	"github.com/EngoEngine/engo/common"
 	"github.com/KMimura/ColonyGame/systems"
+	"golang.org/x/image/font/gofont/gosmallcaps"
 )
 
 type MainScene struct{}
@@ -34,6 +36,7 @@ func (*MainScene) Type() string { return "mainScene" }
 func (*MainScene) Preload() {
 	engo.Files.Load("pics/overworld_tileset_grass.png")
 	engo.Files.Load("pics/characters.png")
+	engo.Files.LoadReaderData("go.ttf", bytes.NewReader(gosmallcaps.TTF))
 	// engo.Files.LoadReaderData("go.ttf", bytes.NewReader(gosmallcaps.TTF))
 	common.SetBackground(color.RGBA{255, 250, 220, 0})
 }
@@ -52,7 +55,7 @@ func (*MainScene) Setup(u engo.Updater) {
 
 	itemMenu := itemMenu{BasicEntity: ecs.NewBasic()}
 	itemMenu.SpaceComponent = common.SpaceComponent{
-		Position: engo.Point{X: engo.WindowWidth() - 1000, Y: engo.WindowHeight() - 700},
+		Position: engo.Point{X: 20, Y: 20},
 		Width:    300,
 		Height:   900,
 	}
@@ -74,6 +77,7 @@ func (*MainScene) Setup(u engo.Updater) {
 			sys.Add(&itemMenu.BasicEntity, &itemMenu.RenderComponent, &itemMenu.SpaceComponent)
 		}
 	}
+	world.AddSystem(&systems.ItemMenuSystem{})
 	// world.AddSystem(&systems.BulletSystem{})
 	// world.AddSystem(&systems.IntermissionSystem{})
 }
