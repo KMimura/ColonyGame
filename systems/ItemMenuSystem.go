@@ -22,8 +22,17 @@ type Text struct {
 }
 
 type ItemMenuSystem struct {
-	text Text
+	text                         Text // 表示するテキスト
+	menuButonPushed              bool // メニュー表示ボタンが押下された状態かどうか
+	menuButonPushedRemainingTime int  // あと何フレームメニューボタン押下を無効化するか
+
 }
+
+var menuZIndex int = 1
+
+var itemMenuInstance *ItemMenu
+
+var buttonDisableTime = 15 // 一度押下されたボタンをどれだけ無効化するか
 
 func ItemMenuInit(world *ecs.World) {
 	itemMenu := ItemMenu{BasicEntity: ecs.NewBasic()}
@@ -43,14 +52,14 @@ func ItemMenuInit(world *ecs.World) {
 		Scale:    engo.Point{X: 1, Y: 1},
 	}
 	itemMenu.RenderComponent.SetShader(common.HUDShader)
-	itemMenu.RenderComponent.SetZIndex(1)
+	itemMenu.RenderComponent.SetZIndex(float32(menuZIndex))
 	for _, system := range world.Systems() {
 		switch sys := system.(type) {
 		case *common.RenderSystem:
 			sys.Add(&itemMenu.BasicEntity, &itemMenu.RenderComponent, &itemMenu.SpaceComponent)
 		}
 	}
-
+	itemMenuInstance = &itemMenu
 }
 
 // Remove 削除する
@@ -65,6 +74,25 @@ func (ims *ItemMenuSystem) Remove(entity ecs.BasicEntity) {
 
 // Update アップデートする
 func (ims *ItemMenuSystem) Update(dt float32) {
+	if ims.menuButonPushed {
+		if ims.menuButonPushedRemainingTime > 0 {
+			ims.menuButonPushedRemainingTime--
+		} else {
+			ims.menuButonPushedRemainingTime = 0
+			ims.menuButonPushed = false
+		}
+	} else {
+		if engo.Input.Button("Space").Down() {
+			if menuZIndex != -1 {
+				menuZIndex = -1
+			} else {
+				menuZIndex = 1
+			}
+			ims.menuButonPushed = true
+			ims.menuButonPushedRemainingTime = buttonDisableTime
+			itemMenuInstance.SetZIndex(float32(menuZIndex))
+		}
+	}
 }
 
 // Init 初期化
@@ -77,6 +105,8 @@ func (ims *ItemMenuSystem) New(w *ecs.World) {
 	fnt.CreatePreloaded()
 
 	ims.text = Text{BasicEntity: ecs.NewBasic()}
+	ims.menuButonPushed = false
+	ims.menuButonPushedRemainingTime = 0
 	ims.text.RenderComponent.Drawable = common.Text{
 		Font: fnt,
 		Text: "Hello, world!",
