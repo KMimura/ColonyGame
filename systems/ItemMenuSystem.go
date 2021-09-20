@@ -28,7 +28,7 @@ type ItemMenuSystem struct {
 
 }
 
-var menuZIndex int = 1
+var menuZIndex int = -10
 
 var itemMenuInstance *ItemMenu
 
@@ -83,14 +83,15 @@ func (ims *ItemMenuSystem) Update(dt float32) {
 		}
 	} else {
 		if engo.Input.Button("Space").Down() {
-			if menuZIndex != -1 {
-				menuZIndex = -1
+			if menuZIndex != -10 {
+				menuZIndex = -10
 			} else {
 				menuZIndex = 1
 			}
 			ims.menuButonPushed = true
 			ims.menuButonPushedRemainingTime = buttonDisableTime
 			itemMenuInstance.SetZIndex(float32(menuZIndex))
+			ims.text.RenderComponent.SetZIndex(float32(menuZIndex + 1))
 		}
 	}
 }
@@ -112,7 +113,7 @@ func (ims *ItemMenuSystem) New(w *ecs.World) {
 		Text: "Hello, world!",
 	}
 	ims.text.SetShader(common.TextHUDShader)
-	ims.text.RenderComponent.SetZIndex(1001)
+	ims.text.RenderComponent.SetZIndex(float32(menuZIndex))
 	ims.text.SpaceComponent = common.SpaceComponent{
 		Position: engo.Point{X: 20, Y: 20},
 		Width:    200,
