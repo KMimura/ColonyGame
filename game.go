@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"image"
+	// "image"
 	"image/color"
 
 	"github.com/EngoEngine/ecs"
@@ -14,11 +14,11 @@ import (
 
 type MainScene struct{}
 
-type itemMenu struct {
-	ecs.BasicEntity
-	common.RenderComponent
-	common.SpaceComponent
-}
+// type itemMenu struct {
+// 	ecs.BasicEntity
+// 	common.RenderComponent
+// 	common.SpaceComponent
+// }
 
 func run() {
 	opts := engo.RunOptions{
@@ -52,31 +52,32 @@ func (*MainScene) Setup(u engo.Updater) {
 	world.AddSystem(&common.RenderSystem{})
 	world.AddSystem(&systems.SceneSystem{})
 	world.AddSystem(&systems.PlayerSystem{})
+	systems.ItemMenuInit(world)
 
-	itemMenu := itemMenu{BasicEntity: ecs.NewBasic()}
-	itemMenu.SpaceComponent = common.SpaceComponent{
-		Position: engo.Point{X: 20, Y: 20},
-		Width:    300,
-		Height:   900,
-	}
-	itemMenu.RenderComponent.SetZIndex(1)
-	hudImage := image.NewUniform(color.RGBA{175, 175, 175, 225})
-	hudNRGBA := common.ImageToNRGBA(hudImage, 300, 900)
-	hudImageObj := common.NewImageObject(hudNRGBA)
-	hudTexture := common.NewTextureSingle(hudImageObj)
-	itemMenu.RenderComponent = common.RenderComponent{
-		Repeat:   common.Repeat,
-		Drawable: hudTexture,
-		Scale:    engo.Point{X: 1, Y: 1},
-	}
-	itemMenu.RenderComponent.SetShader(common.HUDShader)
-	itemMenu.RenderComponent.SetZIndex(1)
-	for _, system := range world.Systems() {
-		switch sys := system.(type) {
-		case *common.RenderSystem:
-			sys.Add(&itemMenu.BasicEntity, &itemMenu.RenderComponent, &itemMenu.SpaceComponent)
-		}
-	}
+	// itemMenu := itemMenu{BasicEntity: ecs.NewBasic()}
+	// itemMenu.SpaceComponent = common.SpaceComponent{
+	// 	Position: engo.Point{X: 20, Y: 20},
+	// 	Width:    300,
+	// 	Height:   900,
+	// }
+	// itemMenu.RenderComponent.SetZIndex(1)
+	// hudImage := image.NewUniform(color.RGBA{175, 175, 175, 225})
+	// hudNRGBA := common.ImageToNRGBA(hudImage, 300, 900)
+	// hudImageObj := common.NewImageObject(hudNRGBA)
+	// hudTexture := common.NewTextureSingle(hudImageObj)
+	// itemMenu.RenderComponent = common.RenderComponent{
+	// 	Repeat:   common.Repeat,
+	// 	Drawable: hudTexture,
+	// 	Scale:    engo.Point{X: 1, Y: 1},
+	// }
+	// itemMenu.RenderComponent.SetShader(common.HUDShader)
+	// itemMenu.RenderComponent.SetZIndex(1)
+	// for _, system := range world.Systems() {
+	// 	switch sys := system.(type) {
+	// 	case *common.RenderSystem:
+	// 		sys.Add(&itemMenu.BasicEntity, &itemMenu.RenderComponent, &itemMenu.SpaceComponent)
+	// 	}
+	// }
 	world.AddSystem(&systems.ItemMenuSystem{})
 	// world.AddSystem(&systems.BulletSystem{})
 	// world.AddSystem(&systems.IntermissionSystem{})

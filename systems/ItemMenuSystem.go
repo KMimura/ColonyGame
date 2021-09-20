@@ -1,6 +1,7 @@
 package systems
 
 import (
+	"image"
 	"image/color"
 
 	"github.com/EngoEngine/ecs"
@@ -8,7 +9,7 @@ import (
 	"github.com/EngoEngine/engo/common"
 )
 
-type itemMenu struct {
+type ItemMenu struct {
 	ecs.BasicEntity
 	common.RenderComponent
 	common.SpaceComponent
@@ -22,6 +23,34 @@ type Text struct {
 
 type ItemMenuSystem struct {
 	text Text
+}
+
+func ItemMenuInit(world *ecs.World) {
+	itemMenu := ItemMenu{BasicEntity: ecs.NewBasic()}
+	itemMenu.SpaceComponent = common.SpaceComponent{
+		Position: engo.Point{X: 20, Y: 20},
+		Width:    300,
+		Height:   900,
+	}
+	itemMenu.RenderComponent.SetZIndex(1)
+	hudImage := image.NewUniform(color.RGBA{175, 175, 175, 225})
+	hudNRGBA := common.ImageToNRGBA(hudImage, 300, 900)
+	hudImageObj := common.NewImageObject(hudNRGBA)
+	hudTexture := common.NewTextureSingle(hudImageObj)
+	itemMenu.RenderComponent = common.RenderComponent{
+		Repeat:   common.Repeat,
+		Drawable: hudTexture,
+		Scale:    engo.Point{X: 1, Y: 1},
+	}
+	itemMenu.RenderComponent.SetShader(common.HUDShader)
+	itemMenu.RenderComponent.SetZIndex(1)
+	for _, system := range world.Systems() {
+		switch sys := system.(type) {
+		case *common.RenderSystem:
+			sys.Add(&itemMenu.BasicEntity, &itemMenu.RenderComponent, &itemMenu.SpaceComponent)
+		}
+	}
+
 }
 
 // Remove 削除する
