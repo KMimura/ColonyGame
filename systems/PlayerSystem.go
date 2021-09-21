@@ -52,7 +52,82 @@ var leftPicTwo *common.Texture
 
 // New 新規作成時に呼び出される
 func (ps *PlayerSystem) New(w *ecs.World) {
-	ps.Init(w)
+	rand.Seed(time.Now().UnixNano())
+	ps.world = w
+	// プレーヤーの作成
+	player := Player{BasicEntity: ecs.NewBasic()}
+
+	// ライフを与える
+	player.remainingHearts = 5
+	// 移動はしていない
+	player.direction = 0
+	player.facingDirection = 1
+	player.movingPic = false
+	playerInstance = &player
+
+	// 初期の配置
+	ifKeepSearching := true
+	if ifKeepSearching {
+		tmpX := rand.Intn(20)
+		tmpY := rand.Intn(20)
+		if checkIfPassable(tmpX, tmpY) {
+			ifKeepSearching = false
+			player.cellX = tmpX
+			player.cellY = tmpY
+		}
+	}
+	positionX := cellLength * player.cellX
+	positionY := cellLength * player.cellY
+	player.SpaceComponent = common.SpaceComponent{
+		Position: engo.Point{X: float32(positionX), Y: float32(positionY)},
+		Width:    45,
+		Height:   45,
+	}
+	// 速度
+	player.velocity = 16
+	// 画像の読み込み
+	loadTxt := "pics/characters.png"
+	Spritesheet = common.NewSpritesheetWithBorderFromFile(loadTxt, 32, 32, 0, 0)
+
+	topPicTmpOne := Spritesheet.Cell(2)
+	topPicOne = &topPicTmpOne
+	topPicTmpTwo := Spritesheet.Cell(3)
+	topPicTwo = &topPicTmpTwo
+	rightPicTmpOne := Spritesheet.Cell(22)
+	rightPicOne = &rightPicTmpOne
+	rightPicTmpTwo := Spritesheet.Cell(23)
+	rightPicTwo = &rightPicTmpTwo
+	bottomPicTmpOne := Spritesheet.Cell(42)
+	bottomPicOne = &bottomPicTmpOne
+	bottomPicTmpTwo := Spritesheet.Cell(43)
+	bottomPicTwo = &bottomPicTmpTwo
+	leftPicTmpOne := Spritesheet.Cell(62)
+	leftPicOne = &leftPicTmpOne
+	leftPicTmpTwo := Spritesheet.Cell(63)
+	leftPicTwo = &leftPicTmpTwo
+
+	player.RenderComponent = common.RenderComponent{
+		Drawable: topPicOne,
+		Scale:    engo.Point{X: 2.25, Y: 2.25},
+	}
+	player.RenderComponent.SetZIndex(1)
+	ps.playerEntity = &player
+	ps.texture = topPicOne
+	for _, system := range ps.world.Systems() {
+		switch sys := system.(type) {
+		case *common.RenderSystem:
+			sys.Add(&player.BasicEntity, &player.RenderComponent, &player.SpaceComponent)
+		}
+	}
+	// カメラエンティティの取得
+	for _, system := range w.Systems() {
+		switch sys := system.(type) {
+		case *common.CameraSystem:
+			camEntity = sys
+			common.CameraBounds.Max.X = float32(screenLength * cellLength)
+			common.CameraBounds.Max.Y = float32(screenLength * cellLength)
+		}
+	}
 }
 
 // Remove 削除する
@@ -254,86 +329,6 @@ func (ps *PlayerSystem) Update(dt float32) {
 			} else {
 				ps.playerEntity.RenderComponent.Drawable = leftPicOne
 			}
-		}
-	}
-}
-
-// Init 初期化
-func (ps *PlayerSystem) Init(w *ecs.World) {
-	rand.Seed(time.Now().UnixNano())
-	ps.world = w
-	// プレーヤーの作成
-	player := Player{BasicEntity: ecs.NewBasic()}
-
-	// ライフを与える
-	player.remainingHearts = 5
-	// 移動はしていない
-	player.direction = 0
-	player.facingDirection = 1
-	player.movingPic = false
-	playerInstance = &player
-
-	// 初期の配置
-	ifKeepSearching := true
-	if ifKeepSearching {
-		tmpX := rand.Intn(20)
-		tmpY := rand.Intn(20)
-		if checkIfPassable(tmpX, tmpY) {
-			ifKeepSearching = false
-			player.cellX = tmpX
-			player.cellY = tmpY
-		}
-	}
-	positionX := cellLength * player.cellX
-	positionY := cellLength * player.cellY
-	player.SpaceComponent = common.SpaceComponent{
-		Position: engo.Point{X: float32(positionX), Y: float32(positionY)},
-		Width:    45,
-		Height:   45,
-	}
-	// 速度
-	player.velocity = 16
-	// 画像の読み込み
-	loadTxt := "pics/characters.png"
-	Spritesheet = common.NewSpritesheetWithBorderFromFile(loadTxt, 32, 32, 0, 0)
-
-	topPicTmpOne := Spritesheet.Cell(2)
-	topPicOne = &topPicTmpOne
-	topPicTmpTwo := Spritesheet.Cell(3)
-	topPicTwo = &topPicTmpTwo
-	rightPicTmpOne := Spritesheet.Cell(22)
-	rightPicOne = &rightPicTmpOne
-	rightPicTmpTwo := Spritesheet.Cell(23)
-	rightPicTwo = &rightPicTmpTwo
-	bottomPicTmpOne := Spritesheet.Cell(42)
-	bottomPicOne = &bottomPicTmpOne
-	bottomPicTmpTwo := Spritesheet.Cell(43)
-	bottomPicTwo = &bottomPicTmpTwo
-	leftPicTmpOne := Spritesheet.Cell(62)
-	leftPicOne = &leftPicTmpOne
-	leftPicTmpTwo := Spritesheet.Cell(63)
-	leftPicTwo = &leftPicTmpTwo
-
-	player.RenderComponent = common.RenderComponent{
-		Drawable: topPicOne,
-		Scale:    engo.Point{X: 2.25, Y: 2.25},
-	}
-	player.RenderComponent.SetZIndex(1)
-	ps.playerEntity = &player
-	ps.texture = topPicOne
-	for _, system := range ps.world.Systems() {
-		switch sys := system.(type) {
-		case *common.RenderSystem:
-			sys.Add(&player.BasicEntity, &player.RenderComponent, &player.SpaceComponent)
-		}
-	}
-	// カメラエンティティの取得
-	for _, system := range w.Systems() {
-		switch sys := system.(type) {
-		case *common.CameraSystem:
-			camEntity = sys
-			common.CameraBounds.Max.X = float32(screenLength * cellLength)
-			common.CameraBounds.Max.Y = float32(screenLength * cellLength)
 		}
 	}
 }
