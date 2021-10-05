@@ -28,7 +28,7 @@ type ItemMenuSystem struct {
 
 }
 
-var menuZIndex int = -10
+var menuVisibility = false
 
 var itemMenuInstance *ItemMenu
 
@@ -41,7 +41,7 @@ func ItemMenuInit(world *ecs.World) {
 		Width:    300,
 		Height:   900,
 	}
-	itemMenu.RenderComponent.SetZIndex(1)
+	itemMenu.RenderComponent.SetZIndex(10)
 	hudImage := image.NewUniform(color.RGBA{175, 175, 175, 225})
 	hudNRGBA := common.ImageToNRGBA(hudImage, 300, 900)
 	hudImageObj := common.NewImageObject(hudNRGBA)
@@ -52,7 +52,7 @@ func ItemMenuInit(world *ecs.World) {
 		Scale:    engo.Point{X: 1, Y: 1},
 	}
 	itemMenu.RenderComponent.SetShader(common.HUDShader)
-	itemMenu.RenderComponent.SetZIndex(float32(menuZIndex))
+	itemMenu.RenderComponent.Hidden = !menuVisibility
 	for _, system := range world.Systems() {
 		switch sys := system.(type) {
 		case *common.RenderSystem:
@@ -83,15 +83,11 @@ func (ims *ItemMenuSystem) Update(dt float32) {
 		}
 	} else {
 		if engo.Input.Button("Space").Down() {
-			if menuZIndex != -10 {
-				menuZIndex = -10
-			} else {
-				menuZIndex = 1
-			}
+			menuVisibility = !menuVisibility
 			ims.menuButonPushed = true
 			ims.menuButonPushedRemainingTime = buttonDisableTime
-			itemMenuInstance.SetZIndex(float32(menuZIndex))
-			ims.text.RenderComponent.SetZIndex(float32(menuZIndex + 1))
+			itemMenuInstance.Hidden = !menuVisibility
+			ims.text.RenderComponent.Hidden = !menuVisibility
 		}
 	}
 }
@@ -113,7 +109,8 @@ func (ims *ItemMenuSystem) New(w *ecs.World) {
 		Text: "Hello, world!",
 	}
 	ims.text.SetShader(common.TextHUDShader)
-	ims.text.RenderComponent.SetZIndex(float32(menuZIndex))
+	ims.text.RenderComponent.SetZIndex(10)
+	ims.text.RenderComponent.Hidden = !menuVisibility
 	ims.text.SpaceComponent = common.SpaceComponent{
 		Position: engo.Point{X: 20, Y: 20},
 		Width:    200,
