@@ -36,9 +36,11 @@ const minimumForestNum = 25
 const createForestMaximumTryCount = 20
 
 type tileInfo struct {
-	SpritesheetNum int
-	TileType       string
-	IfPassable     bool
+	SpritesheetNum int    // 表示するタイルシート
+	TileType       string // タイルの種類
+	IfPassable     bool   // プレイヤーが通過できるか
+	tillable       bool   // 耕せるか
+	crop           int    // 作物のインスタンス
 }
 
 // Tile タイル一つ一つを表す構造体
@@ -89,6 +91,7 @@ func (ss *SceneSystem) init(w *ecs.World) {
 				stageTiles[i][j].SpritesheetNum = rand.Intn(4)
 				stageTiles[i][j].TileType = "grass"
 				stageTiles[i][j].IfPassable = true
+				stageTiles[i][j].tillable = true
 			}
 		}
 		createRiver(w, &stageTiles)
@@ -263,6 +266,7 @@ func createRiver(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo)
 		stageTiles[r.Y][r.X].SpritesheetNum = r.tilenum
 		stageTiles[r.Y][r.X].TileType = "river"
 		stageTiles[r.Y][r.X].IfPassable = false
+		stageTiles[r.Y][r.X].tillable = false
 	}
 }
 
@@ -315,6 +319,7 @@ func createForest(w *ecs.World, stageTiles *[screenLength][screenLength]tileInfo
 			stageTiles[i.Y][i.X].SpritesheetNum = i.tilenum
 			stageTiles[i.Y][i.X].TileType = "forest"
 			stageTiles[i.Y][i.X].IfPassable = false
+			stageTiles[i.Y][i.X].tillable = false
 		}
 	}
 }

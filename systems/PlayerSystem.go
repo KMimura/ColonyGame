@@ -84,7 +84,7 @@ func (ps *PlayerSystem) New(w *ecs.World) {
 		Height:   45,
 	}
 	// 速度
-	player.velocity = 16
+	player.velocity = 4
 	// 画像の読み込み
 	loadTxt := "pics/characters.png"
 	Spritesheet = common.NewSpritesheetWithBorderFromFile(loadTxt, 32, 32, 0, 0)
