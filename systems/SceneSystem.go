@@ -334,7 +334,7 @@ func escape() {
 }
 
 func checkIfPassable(x, y int) bool {
-	if y > screenLength || x > screenLength || y < 0 || x < 0 {
+	if y > screenLength-1 || x > screenLength-1 || y < 0 || x < 0 {
 		return false
 	}
 	return stageTiles[y][x].IfPassable
